@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { usePalette } from '../context/PaletteContext';
 import ColorSwatch from './ColorSwatch';
-import { RefreshCw, Save, Download, Check } from 'lucide-react';
+import { getContrastText, getFormats } from '../utils/colorUtils';
+import { RefreshCw, Save, Download, Check, Image as ImageIcon, Code, FileJson, Wind } from 'lucide-react';
 import {
     DndContext,
     closestCenter,
@@ -95,10 +96,52 @@ const PaletteGenerator = () => {
         copyToClipboard(`module.exports = ${JSON.stringify(config, null, 2)}`, 'Tailwind CSS config');
     };
 
+    const exportImage = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const width = 1200;
+        const height = 600;
+        canvas.width = width;
+        canvas.height = height;
+
+        const swatchWidth = width / palette.length;
+
+        palette.forEach((color, i) => {
+            const formats = getFormats(color.hex);
+            const textColor = getContrastText(color.hex);
+
+            // Draw swatch
+            ctx.fillStyle = color.hex;
+            ctx.fillRect(i * swatchWidth, 0, swatchWidth, height);
+
+            // Draw text
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            // Hex
+            ctx.fillStyle = textColor;
+            ctx.font = '700 64px "Kalam", cursive';
+            const centerX = i * swatchWidth + swatchWidth / 2;
+            const centerY = height / 2;
+            ctx.fillText(formats.hex, centerX, centerY - 20);
+
+            // RGB & HSL
+            ctx.font = '400 24px "Patrick Hand", cursive';
+            ctx.fillText(formats.rgb, centerX, centerY + 40);
+            ctx.fillText(formats.hsl, centerX, centerY + 80);
+        });
+
+        const link = document.createElement('a');
+        link.download = `palette-${Date.now()}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        setShowExport(false);
+    };
+
     return (
         <div className="generator-container">
             <div className="generator-header">
-                <h2>Palette Generator</h2>
+                <h2></h2>
                 <div className="generator-actions">
                     <p className="hint hide-mobile">Press <strong>Spacebar</strong> to generate</p>
 
@@ -150,9 +193,18 @@ const PaletteGenerator = () => {
 
                             {showExport && (
                                 <div className="export-menu">
-                                    <button onClick={exportCSS}>Copy CSS Variables</button>
-                                    <button onClick={exportJSON}>Copy JSON Array</button>
-                                    <button onClick={exportTailwind}>Copy Tailwind Config</button>
+                                    <button onClick={exportImage}>
+                                        <ImageIcon size={18} /> Export as Image
+                                    </button>
+                                    <button onClick={exportCSS}>
+                                        <Code size={18} /> Copy CSS Variables
+                                    </button>
+                                    <button onClick={exportJSON}>
+                                        <FileJson size={18} /> Copy JSON Array
+                                    </button>
+                                    <button onClick={exportTailwind}>
+                                        <Wind size={18} /> Copy Tailwind Config
+                                    </button>
                                 </div>
                             )}
                         </div>

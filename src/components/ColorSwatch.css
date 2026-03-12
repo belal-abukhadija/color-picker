@@ -38,20 +38,23 @@
     justify-content: center;
     width: 40px;
     height: 40px;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.05);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    border-radius: var(--radius-oval);
+    background: var(--panel-bg);
+    border: 3px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    color: var(--text-primary);
     transition: all 0.2s;
 }
 
 .icon-btn:hover {
-    background: rgba(0, 0, 0, 0.15);
-    transform: scale(1.05);
+    background: var(--muted-paper);
+    transform: scale(1.05) rotate(5deg);
+    box-shadow: var(--shadow-pressed);
 }
 
 .icon-btn:active {
     transform: scale(0.95);
+    box-shadow: none;
 }
 
 .swatch-info {
@@ -65,13 +68,14 @@
 .hex-code {
     font-size: clamp(1rem, 2vw, 1.75rem);
     font-weight: 700;
+    font-family: 'Kalam', cursive;
     letter-spacing: 0.05em;
     cursor: pointer;
     transition: transform 0.2s;
 }
 
 .hex-code:hover {
-    transform: scale(1.05);
+    transform: scale(1.05) rotate(-2deg);
 }
 
 .color-formats {
@@ -87,14 +91,17 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
+    background: var(--panel-bg);
+    color: var(--text-primary);
+    border: 3px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
     padding: 0.5rem 1rem;
-    border-radius: 9999px;
-    font-size: 0.875rem;
+    border-radius: var(--radius-wobbly);
+    font-size: 1.1rem;
     font-weight: 500;
     pointer-events: none;
     animation: fadeInOut 1.5s ease forwards;
+    transform: rotate(2deg);
 }
 
 @keyframes fadeInOut {
@@ -126,7 +133,7 @@
     left: 50%;
     transform: translateX(-50%);
     background: var(--panel-bg);
-    border-radius: 12px;
+    border-radius: var(--radius-wobbly);
     padding: 1.5rem;
     width: 200px;
     box-shadow: var(--shadow-lg);
@@ -135,7 +142,7 @@
     gap: 1rem;
     z-index: 100;
     color: var(--text-primary);
-    border: 1px solid var(--border-color);
+    border: 3px solid var(--border-color);
     cursor: default;
 }
 
@@ -175,29 +182,31 @@
 }
 
 .editor-row label {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     font-weight: 600;
     color: var(--text-secondary);
     text-transform: uppercase;
+    font-family: 'Kalam', cursive;
 }
 
 .editor-row input[type="text"] {
     width: 100%;
     padding: 0.5rem;
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    font-size: 0.9rem;
+    border: 3px solid var(--border-color);
+    border-radius: var(--radius-wobbly);
+    font-size: 1.1rem;
     font-family: inherit;
     outline: none;
     transition: var(--transition);
 }
 
 .editor-row input[type="text"]:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+    border-color: var(--blue-pen);
+    box-shadow: 0 0 0 2px rgba(45, 93, 161, 0.1);
 }
 
 .native-color-picker {
+    appearance: none;
     -webkit-appearance: none;
     border: none;
     width: 100%;
@@ -213,8 +222,8 @@
 }
 
 .native-color-picker::-webkit-color-swatch {
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
+    border: 3px solid var(--border-color);
+    border-radius: var(--radius-subtle);
 }
 
 .eyedropper-btn {
@@ -224,14 +233,18 @@
     gap: 0.5rem;
     width: 100%;
     padding: 0.6rem;
-    border-radius: 6px;
-    background: rgba(0, 0, 0, 0.04);
+    border-radius: var(--radius-oval);
+    background: var(--panel-bg);
+    border: 3px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
     color: var(--text-primary);
-    font-size: 0.85rem;
+    font-size: 1.1rem;
     font-weight: 500;
     transition: var(--transition);
 }
 
 .eyedropper-btn:hover {
-    background: rgba(0, 0, 0, 0.08);
+    background: var(--muted-paper);
+    transform: translateY(2px);
+    box-shadow: var(--shadow-pressed);
 }

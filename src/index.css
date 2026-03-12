@@ -1,16 +1,22 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@700&family=Patrick+Hand&display=swap');
 
 :root {
-  --root-bg: #f8f9fa;
+  --root-bg: #fdfbf7;
   --panel-bg: #ffffff;
-  --text-primary: #111827;
-  --text-secondary: #4b5563;
-  --border-color: #e5e7eb;
-  --accent: #3b82f6;
-  --accent-hover: #2563eb;
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --text-primary: #2d2d2d;
+  --text-secondary: #2d2d2d;
+  --border-color: #2d2d2d;
+  --accent: #ff4d4d;
+  --accent-hover: #cc3d3d;
+  --blue-pen: #2d5da1;
+  --muted-paper: #e5e0d8;
+  --shadow-sm: 4px 4px 0px 0px #2d2d2d;
+  --shadow-md: 4px 4px 0px 0px #2d2d2d;
+  --shadow-lg: 8px 8px 0px 0px #2d2d2d;
+  --shadow-pressed: 2px 2px 0px 0px #2d2d2d;
+  --radius-wobbly: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  --radius-subtle: 2px 255px 3px 255px / 255px 5px 225px 3px;
+  --radius-oval: 50% 50% 50% 50% / 60% 40% 60% 40%;
   --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -21,32 +27,18 @@
 }
 
 body {
-  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Patrick Hand', cursive;
   background: var(--root-bg);
-  background-image:
-    radial-gradient(at 0% 0%, hsla(253, 16%, 7%, 0.02) 0, transparent 50%),
-    radial-gradient(at 50% 0%, hsla(225, 39%, 30%, 0.03) 0, transparent 50%),
-    radial-gradient(at 100% 0%, hsla(339, 49%, 30%, 0.03) 0, transparent 50%);
-  background-size: 200% 200%;
-  animation: gradientBg 15s ease infinite;
+  background-image: radial-gradient(#e5e0d8 1px, transparent 1px);
+  background-size: 24px 24px;
   color: var(--text-primary);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-@keyframes gradientBg {
-  0% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
-
-  100% {
-    background-position: 0% 50%;
-  }
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Kalam', cursive;
 }
 
 button {
@@ -68,10 +60,10 @@ a {
   padding: 0 2rem;
 }
 
-/* Glassmorphism utility */
-.glass {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+/* Glassmorphism utility removed, replacing with wobbly class */
+.wobbly-box {
+  background: var(--panel-bg);
+  border: 3px solid var(--border-color);
+  border-radius: var(--radius-wobbly);
+  box-shadow: var(--shadow-sm);
 }

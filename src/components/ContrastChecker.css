@@ -14,6 +14,8 @@
     font-size: 2rem;
     margin-bottom: 0.5rem;
     color: var(--text-primary);
+    font-weight: 700;
+    transform: rotate(-1deg);
 }
 
 .checker-layout {
@@ -29,9 +31,10 @@
     gap: 1.5rem;
     background: var(--panel-bg);
     padding: 2rem;
-    border-radius: 16px;
+    border-radius: var(--radius-wobbly);
     box-shadow: var(--shadow-sm);
-    border: 1px solid var(--border-color);
+    border: 3px solid var(--border-color);
+    transform: rotate(1deg);
 }
 
 .input-group {
@@ -43,7 +46,8 @@
 .input-group label {
     font-weight: 600;
     color: var(--text-secondary);
-    font-size: 0.9rem;
+    font-size: 1.1rem;
+    font-family: 'Kalam', cursive;
 }
 
 .color-input-wrapper {
@@ -53,11 +57,12 @@
 }
 
 .native-color {
+    appearance: none;
     -webkit-appearance: none;
     border: none;
     width: 50px;
     height: 50px;
-    border-radius: 8px;
+    border-radius: var(--radius-wobbly);
     cursor: pointer;
     padding: 0;
     background: transparent;
@@ -68,35 +73,37 @@
 }
 
 .native-color::-webkit-color-swatch {
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
+    border: 3px solid var(--border-color);
+    border-radius: var(--radius-wobbly);
 }
 
 .text-input {
     flex: 1;
     padding: 0.75rem 1rem;
-    font-size: 1rem;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
+    font-size: 1.1rem;
+    border: 3px solid var(--border-color);
+    border-radius: var(--radius-wobbly);
     outline: none;
     transition: var(--transition);
     font-family: inherit;
+    box-shadow: var(--shadow-sm);
 }
 
 .text-input:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    border-color: var(--blue-pen);
+    box-shadow: 0 0 0 2px rgba(45, 93, 161, 0.1);
 }
 
 .results-panel {
     background: var(--panel-bg);
     padding: 2rem;
-    border-radius: 16px;
+    border-radius: var(--radius-wobbly);
     box-shadow: var(--shadow-sm);
-    border: 1px solid var(--border-color);
+    border: 3px solid var(--border-color);
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    transform: rotate(-0.5deg);
 }
 
 .ratio-score {
@@ -116,6 +123,7 @@
     font-weight: 700;
     line-height: 1;
     margin-bottom: 0.25rem;
+    font-family: 'Kalam', cursive;
 }
 
 .rating.good {
@@ -155,8 +163,9 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.4rem 0.75rem;
-    border-radius: 9999px;
-    font-size: 0.85rem;
+    border-radius: var(--radius-wobbly);
+    border: 2px solid var(--border-color);
+    font-size: 1rem;
     font-weight: 600;
 }
 
@@ -172,9 +181,9 @@
 
 .preview-box {
     padding: 2rem;
-    border-radius: 16px;
+    border-radius: var(--radius-wobbly);
     box-shadow: var(--shadow-sm);
-    border: 1px solid var(--border-color);
+    border: 3px dashed var(--border-color);
     transition: all 0.3s;
     display: flex;
     align-items: center;

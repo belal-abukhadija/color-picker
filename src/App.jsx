@@ -13,7 +13,7 @@ function App() {
       <header className="navbar glass">
         <div className="logo">
 
-          <h1>Belal Abu Khadija</h1>
+          <h1>Colors Tool</h1>
         </div>
         <nav className="nav-links">
           <button

@@ -15,11 +15,13 @@
     font-size: 2rem;
     margin-bottom: 0.5rem;
     color: var(--text-primary);
+    font-weight: 700;
+    transform: rotate(1deg);
 }
 
 .dropzone {
-    border: 2px dashed var(--border-color);
-    border-radius: 16px;
+    border: 3px dashed var(--border-color);
+    border-radius: var(--radius-wobbly);
     background: var(--panel-bg);
     padding: 4rem 2rem;
     text-align: center;
@@ -30,16 +32,19 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transform: rotate(-1deg);
 }
 
 .dropzone.dragging {
     border-color: var(--accent);
-    background: rgba(59, 130, 246, 0.05);
+    background: var(--muted-paper);
 }
 
 .dropzone.has-image {
     padding: 0;
     border-style: solid;
+    border-width: 4px;
 }
 
 .dropzone-content {
@@ -85,39 +90,46 @@
     position: absolute;
     top: 1rem;
     right: 1rem;
-    background: rgba(0, 0, 0, 0.6);
-    color: white;
+    background: var(--panel-bg);
+    color: var(--text-primary);
+    border: 3px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
     padding: 0.5rem 1rem;
-    border-radius: 8px;
-    font-size: 0.875rem;
+    border-radius: var(--radius-wobbly);
+    font-size: 1.1rem;
     font-weight: 500;
     cursor: pointer;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    font-family: inherit;
+    transition: var(--transition);
 }
 
 .change-img-btn:hover {
-    background: rgba(0, 0, 0, 0.8);
+    background: var(--muted-paper);
+    transform: translateY(2px);
+    box-shadow: var(--shadow-pressed);
 }
 
 .extracted-palette-section {
     background: var(--panel-bg);
     padding: 2rem;
-    border-radius: 16px;
-    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius-wobbly);
+    box-shadow: var(--shadow-lg);
+    border: 4px solid var(--border-color);
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 1.5rem;
+    transform: rotate(1deg);
 }
 
 .extracted-swatches {
     display: flex;
     width: 100%;
     height: 100px;
-    border-radius: 12px;
-    overflow: hidden;
+    border-radius: var(--radius-wobbly);
+    border: 3px solid var(--border-color);
     box-shadow: var(--shadow-sm);
+    overflow: hidden;
 }
 
 .mini-swatch {
@@ -127,7 +139,8 @@
     justify-content: center;
     transition: flex 0.3s ease;
     font-weight: 600;
-    font-size: 0.875rem;
+    font-size: 1.1rem;
+    font-family: 'Kalam', cursive;
 }
 
 .mini-swatch:hover {

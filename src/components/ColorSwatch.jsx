@@ -89,7 +89,7 @@ const ColorSwatch = ({ color }) => {
                 <button
                     className="icon-btn drag-handle"
                     title="Drag to reorder"
-                    style={{ color: textColor, cursor: 'grab' }}
+                    style={{ cursor: 'grab' }}
                     {...attributes}
                     {...listeners}
                 >
@@ -99,7 +99,6 @@ const ColorSwatch = ({ color }) => {
                     className="icon-btn"
                     onClick={() => toggleLock(color.id)}
                     title={color.locked ? "Unlock color" : "Lock color"}
-                    style={{ color: textColor }}
                 >
                     {color.locked ? <Lock size={20} /> : <Unlock size={20} />}
                 </button>
@@ -122,14 +121,12 @@ const ColorSwatch = ({ color }) => {
                     className="icon-btn"
                     onClick={handleCopy}
                     title="Copy HEX"
-                    style={{ color: textColor }}
                 >
                     <Copy size={20} />
                 </button>
                 <button
                     className="icon-btn"
                     title="Adjust color"
-                    style={{ color: textColor }}
                     onClick={(e) => { e.stopPropagation(); setIsEditing(true); }}
                 >
                     <SlidersHorizontal size={20} />
