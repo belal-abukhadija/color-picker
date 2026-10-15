@@ -1,9 +1,8 @@
 import React, { useState, useRef } from 'react';
 import ColorThief from 'colorthief';
-import { Upload, ArrowRight } from 'lucide-react';
+import { ImageUp, ArrowRight } from 'lucide-react';
 import { usePalette } from '../context/PaletteContext';
 import chroma from 'chroma-js';
-import './ImageExtractor.css';
 
 const ImageExtractor = ({ onGoToGenerator }) => {
     const [imageSrc, setImageSrc] = useState(null);
@@ -22,22 +21,17 @@ const ImageExtractor = ({ onGoToGenerator }) => {
     const handleDrop = (e) => {
         e.preventDefault();
         setIsDragging(false);
-        const file = e.dataTransfer.files[0];
-        handleImageUpload(file);
+        handleImageUpload(e.dataTransfer.files[0]);
     };
 
     const extractColors = () => {
-        if (imgRef.current) {
-            const colorThief = new ColorThief();
-            if (imgRef.current.complete) {
-                try {
-                    // Get 5 dominant colors
-                    const colors = colorThief.getPalette(imgRef.current, 5);
-                    const hexColors = colors.map(rgb => chroma(rgb).hex());
-                    setExtractedColors(hexColors);
-                } catch (err) {
-                    console.error("Extraction failed", err);
-                }
+        if (imgRef.current && imgRef.current.complete) {
+            try {
+                // Five dominant colours
+                const colors = new ColorThief().getPalette(imgRef.current, 5);
+                setExtractedColors(colors.map(rgb => chroma(rgb).hex()));
+            } catch (err) {
+                console.error('Extraction failed', err);
             }
         }
     };
@@ -48,7 +42,7 @@ const ImageExtractor = ({ onGoToGenerator }) => {
             hex,
             locked: false,
         }));
-        // Fill to 5 if less than 5
+        // Fill to 5 if fewer came back
         while (newPalette.length < 5) {
             newPalette.push({
                 id: crypto.randomUUID(),
@@ -61,69 +55,76 @@ const ImageExtractor = ({ onGoToGenerator }) => {
     };
 
     return (
-        <div className="extractor-container">
-            <div className="extractor-header">
-                <h2>Extract Colors from Image</h2>
-                <p className="hint">Upload any image to generate a beautiful palette instantly.</p>
+        <div>
+            <div className="wb-head">
+                <h1 className="wb-title">Colours from an image</h1>
+                <p className="wb-lede">Drop in a photo or a screenshot and get its five dominant colours as a palette.</p>
             </div>
 
-            <div
-                className={`dropzone ${isDragging ? 'dragging' : ''} ${imageSrc ? 'has-image' : ''}`}
-                onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-                onDragLeave={() => setIsDragging(false)}
-                onDrop={handleDrop}
-            >
+            <div className="cp-extract">
                 {!imageSrc ? (
-                    <div className="dropzone-content">
-                        <Upload size={48} className="upload-icon" />
-                        <h3>Drag & drop an image here</h3>
-                        <p>or click to browse from your device</p>
+                    <div
+                        className={`wb-drop${isDragging ? ' is-over' : ''}`}
+                        style={{ minHeight: 360 }}
+                        onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                        onDragLeave={() => setIsDragging(false)}
+                        onDrop={handleDrop}
+                    >
+                        <span className="wb-drop-icon"><ImageUp /></span>
+                        <p className="wb-drop-title">Drop an image here</p>
+                        <p className="wb-drop-hint">or click to choose one. Nothing is uploaded.</p>
                         <input
                             type="file"
                             accept="image/*"
+                            aria-label="Choose an image"
                             onChange={(e) => handleImageUpload(e.target.files[0])}
-                            className="file-input"
                         />
                     </div>
                 ) : (
-                    <div className="preview-container">
+                    <div
+                        className="cp-preview"
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={handleDrop}
+                    >
                         <img
                             ref={imgRef}
                             src={imageSrc}
-                            alt="Preview"
+                            alt="The image colours were taken from"
                             crossOrigin="anonymous"
                             onLoad={extractColors}
                         />
-                        <button className="change-img-btn">
-                            Change Image
+                        <span className="wb-btn wb-btn--sm" role="button">
+                            Change image
                             <input
                                 type="file"
                                 accept="image/*"
+                                aria-label="Choose another image"
                                 onChange={(e) => handleImageUpload(e.target.files[0])}
-                                className="file-input"
                             />
-                        </button>
+                        </span>
                     </div>
                 )}
-            </div>
 
-            {extractedColors.length > 0 && (
-                <div className="extracted-palette-section">
-                    <h3>Extracted Palette</h3>
-                    <div className="extracted-swatches">
-                        {extractedColors.map((hex, i) => (
-                            <div key={i} className="mini-swatch" style={{ backgroundColor: hex }}>
-                                <span style={{ color: chroma.contrast(hex, 'white') > 4.5 ? '#fff' : '#000' }}>
-                                    {hex.toUpperCase()}
-                                </span>
+                <section className="wb-panel wb-stack" aria-labelledby="extracted-title">
+                    <h2 id="extracted-title" className="wb-h2">Extracted palette</h2>
+                    {extractedColors.length > 0 ? (
+                        <>
+                            <div className="cp-strip">
+                                {extractedColors.map((hex, i) => (
+                                    <div key={i} style={{ backgroundColor: hex, color: chroma.contrast(hex, 'white') > 4.5 ? '#fff' : '#000' }}>
+                                        {hex.toUpperCase()}
+                                    </div>
+                                ))}
                             </div>
-                        ))}
-                    </div>
-                    <button className="primary-btn use-palette-btn" onClick={handleUsePalette}>
-                        Use in Generator <ArrowRight size={18} />
-                    </button>
-                </div>
-            )}
+                            <button className="wb-btn wb-btn--primary wb-btn--block" onClick={handleUsePalette}>
+                                Open in generator <ArrowRight />
+                            </button>
+                        </>
+                    ) : (
+                        <p className="wb-note" style={{ margin: 0 }}>The colours appear here once an image is loaded.</p>
+                    )}
+                </section>
+            </div>
         </div>
     );
 };

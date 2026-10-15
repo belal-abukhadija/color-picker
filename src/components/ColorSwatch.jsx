@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { usePalette } from '../context/PaletteContext';
 import { getContrastText, getFormats } from '../utils/colorUtils';
-import { Lock, Unlock, Copy, SlidersHorizontal, GripHorizontal, Pipette, X } from 'lucide-react';
+import { Lock, Unlock, Copy, SlidersHorizontal, GripVertical, Pipette, X } from 'lucide-react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import chroma from 'chroma-js';
-import './ColorSwatch.css';
 
 const ColorSwatch = ({ color }) => {
     const { toggleLock, updateColor } = usePalette();
@@ -32,7 +31,6 @@ const ColorSwatch = ({ color }) => {
         backgroundColor: color.hex,
         color: textColor,
         zIndex: isDragging ? 50 : (isEditing ? 40 : 1),
-        boxShadow: isDragging ? 'var(--shadow-lg)' : 'none',
     };
 
     const formats = getFormats(color.hex);
@@ -41,7 +39,7 @@ const ColorSwatch = ({ color }) => {
         setTempHex(formats.hex);
     }, [formats.hex]);
 
-    // Handle click outside to close editor
+    // Close the editor on outside click
     useEffect(() => {
         const handleClickOutside = (e) => {
             if (editorRef.current && !editorRef.current.contains(e.target)) {
@@ -83,65 +81,67 @@ const ColorSwatch = ({ color }) => {
         <div
             ref={setNodeRef}
             style={style}
-            className={`color-swatch ${isDragging ? 'dragging' : ''}`}
+            className={`cp-swatch${color.locked ? ' is-locked' : ''}`}
         >
-            <div className="swatch-actions top-actions">
+            <div className="cp-swatch-tools">
                 <button
-                    className="icon-btn drag-handle"
+                    className="cp-tool"
                     title="Drag to reorder"
+                    aria-label="Drag to reorder"
                     style={{ cursor: 'grab' }}
                     {...attributes}
                     {...listeners}
                 >
-                    <GripHorizontal size={20} />
+                    <GripVertical />
                 </button>
                 <button
-                    className="icon-btn"
+                    className={`cp-tool${color.locked ? ' is-on' : ''}`}
                     onClick={() => toggleLock(color.id)}
-                    title={color.locked ? "Unlock color" : "Lock color"}
+                    title={color.locked ? 'Unlock colour' : 'Lock colour'}
+                    aria-label={color.locked ? 'Unlock colour' : 'Lock colour'}
+                    aria-pressed={color.locked}
                 >
-                    {color.locked ? <Lock size={20} /> : <Unlock size={20} />}
+                    {color.locked ? <Lock /> : <Unlock />}
+                </button>
+                <button className="cp-tool" onClick={handleCopy} title="Copy hex" aria-label="Copy hex">
+                    <Copy />
+                </button>
+                <button
+                    className="cp-tool"
+                    title="Adjust colour"
+                    aria-label="Adjust colour"
+                    onClick={(e) => { e.stopPropagation(); setIsEditing(true); }}
+                >
+                    <SlidersHorizontal />
                 </button>
             </div>
 
-            <div className="swatch-info">
-                <h2 className="hex-code" onClick={handleCopy}>
+            <div className="cp-swatch-info">
+                <button className="cp-hex" onClick={handleCopy} title="Copy hex">
                     {formats.hex}
-                </h2>
-                {copied && <span className="copy-badge">Copied!</span>}
-
-                <div className="color-formats">
+                </button>
+                <div className="cp-formats">
                     <span>{formats.rgb}</span>
                     <span>{formats.hsl}</span>
                 </div>
             </div>
 
-            <div className="swatch-actions bottom-actions">
-                <button
-                    className="icon-btn"
-                    onClick={handleCopy}
-                    title="Copy HEX"
-                >
-                    <Copy size={20} />
-                </button>
-                <button
-                    className="icon-btn"
-                    title="Adjust color"
-                    onClick={(e) => { e.stopPropagation(); setIsEditing(true); }}
-                >
-                    <SlidersHorizontal size={20} />
-                </button>
-            </div>
+            {copied && <span className="cp-copied" role="status">Copied {formats.hex}</span>}
 
             {isEditing && (
-                <div className="editor-popover" ref={editorRef} onClick={(e) => e.stopPropagation()}>
-                    <button className="close-editor-btn" onClick={() => setIsEditing(false)}>
-                        <X size={16} />
-                    </button>
+                <div className="cp-editor wb-menu" ref={editorRef} onClick={(e) => e.stopPropagation()}>
+                    <div className="cp-editor-head">
+                        <span className="wb-h3">Adjust</span>
+                        <button className="wb-btn wb-btn--quiet wb-btn--icon wb-btn--sm" onClick={() => setIsEditing(false)} aria-label="Close">
+                            <X />
+                        </button>
+                    </div>
 
-                    <div className="editor-row">
-                        <label>HEX</label>
+                    <div>
+                        <label className="wb-label" htmlFor={`hex-${color.id}`}>Hex</label>
                         <input
+                            id={`hex-${color.id}`}
+                            className="wb-input wb-num"
                             type="text"
                             value={tempHex}
                             onChange={handleHexChange}
@@ -149,19 +149,20 @@ const ColorSwatch = ({ color }) => {
                         />
                     </div>
 
-                    <div className="editor-row">
-                        <label>Picker</label>
+                    <div>
+                        <label className="wb-label" htmlFor={`pick-${color.id}`}>Picker</label>
                         <input
+                            id={`pick-${color.id}`}
                             type="color"
                             value={chroma.valid(tempHex) ? chroma(tempHex).hex() : '#000000'}
                             onChange={(e) => updateColor(color.id, e.target.value)}
-                            className="native-color-picker"
+                            className="cp-native"
                         />
                     </div>
 
                     {window.EyeDropper && (
-                        <button className="eyedropper-btn" onClick={handleEyeDropper}>
-                            <Pipette size={16} /> Pick from screen
+                        <button className="wb-btn wb-btn--sm" onClick={handleEyeDropper}>
+                            <Pipette /> Pick from screen
                         </button>
                     )}
                 </div>

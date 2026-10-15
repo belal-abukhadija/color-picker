@@ -16,12 +16,12 @@ import {
     sortableKeyboardCoordinates,
     horizontalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import './PaletteGenerator.css';
 
 const PaletteGenerator = () => {
     const { palette, generateNewColors, reorderPalette, harmonyMode, setHarmonyMode, saveCurrentPalette, colorCount, setColorCount } = usePalette();
     const [showExport, setShowExport] = useState(false);
     const [saveSuccess, setSaveSuccess] = useState(false);
+    const [toast, setToast] = useState(null);
     const exportRef = useRef(null);
 
     const sensors = useSensors(
@@ -31,7 +31,7 @@ const PaletteGenerator = () => {
 
     useEffect(() => {
         const handleKeyDown = (e) => {
-            if (e.code === 'Space' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+            if (e.code === 'Space' && !['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON'].includes(e.target.tagName)) {
                 e.preventDefault();
                 generateNewColors();
             }
@@ -50,6 +50,12 @@ const PaletteGenerator = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [showExport]);
 
+    useEffect(() => {
+        if (!toast) return;
+        const t = setTimeout(() => setToast(null), 2200);
+        return () => clearTimeout(t);
+    }, [toast]);
+
     const handleDragEnd = (event) => {
         const { active, over } = event;
         if (over && active.id !== over.id) {
@@ -62,12 +68,13 @@ const PaletteGenerator = () => {
     const handleSave = () => {
         saveCurrentPalette(`Palette ${Math.floor(Math.random() * 1000)}`);
         setSaveSuccess(true);
+        setToast('Saved to your gallery');
         setTimeout(() => setSaveSuccess(false), 2000);
     };
 
     const copyToClipboard = (text, label) => {
         navigator.clipboard.writeText(text);
-        alert(`${label} copied to clipboard!`);
+        setToast(`${label} copied`);
         setShowExport(false);
     };
 
@@ -93,7 +100,7 @@ const PaletteGenerator = () => {
                 },
             },
         };
-        copyToClipboard(`module.exports = ${JSON.stringify(config, null, 2)}`, 'Tailwind CSS config');
+        copyToClipboard(`module.exports = ${JSON.stringify(config, null, 2)}`, 'Tailwind config');
     };
 
     const exportImage = () => {
@@ -110,25 +117,20 @@ const PaletteGenerator = () => {
             const formats = getFormats(color.hex);
             const textColor = getContrastText(color.hex);
 
-            // Draw swatch
             ctx.fillStyle = color.hex;
             ctx.fillRect(i * swatchWidth, 0, swatchWidth, height);
 
-            // Draw text
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
 
-            // Hex
-            ctx.fillStyle = textColor;
-            ctx.font = '700 64px "Kalam", cursive';
             const centerX = i * swatchWidth + swatchWidth / 2;
-            const centerY = height / 2;
-            ctx.fillText(formats.hex, centerX, centerY - 20);
+            ctx.fillStyle = textColor;
+            ctx.font = '600 40px "Readex Pro", "Segoe UI", sans-serif';
+            ctx.fillText(formats.hex, centerX, height - 150);
 
-            // RGB & HSL
-            ctx.font = '400 24px "Patrick Hand", cursive';
-            ctx.fillText(formats.rgb, centerX, centerY + 40);
-            ctx.fillText(formats.hsl, centerX, centerY + 80);
+            ctx.font = '400 18px "Readex Pro", "Segoe UI", sans-serif';
+            ctx.fillText(formats.rgb, centerX, height - 100);
+            ctx.fillText(formats.hsl, centerX, height - 72);
         });
 
         const link = document.createElement('a');
@@ -139,85 +141,89 @@ const PaletteGenerator = () => {
     };
 
     return (
-        <div className="generator-container">
-            <div className="generator-header">
-                <h2></h2>
-                <div className="generator-actions">
-                    <p className="hint hide-mobile">Press <strong>Spacebar</strong> to generate</p>
+        <div>
+            <h1 className="wb-sr">Palette generator</h1>
+            <div className="cp-toolbar">
+                <p className="wb-note" style={{ margin: 0 }}>
+                    Press <kbd className="wb-chip" style={{ font: 'inherit', fontWeight: 600 }}>Space</kbd> for a new palette. Lock the colours you want to keep.
+                </p>
 
-                    <div className="action-group">
-                        <div className="count-selector">
-                            <label>Colors:</label>
-                            <input
-                                type="number"
-                                min="2"
-                                max="10"
-                                value={colorCount}
-                                onChange={(e) => {
-                                    const val = parseInt(e.target.value);
-                                    if (val >= 2 && val <= 10) {
-                                        setColorCount(val);
-                                        generateNewColors(val);
-                                    }
-                                }}
-                            />
-                        </div>
-
-                        <select
-                            className="harmony-select hide-mobile"
-                            value={harmonyMode}
-                            onChange={(e) => setHarmonyMode(e.target.value)}
-                        >
-                            <option value="random">Random (Random variations)</option>
-                            <option value="analogous">Analogous (Adjacent on color wheel)</option>
-                            <option value="monochromatic">Monochromatic (Shades & tints)</option>
-                            <option value="complementary">Complementary (Opposite colors)</option>
-                            <option value="splitComplementary">Split-Complementary (Opposite adjacent)</option>
-                            <option value="triadic">Triadic (Three equidistant colors)</option>
-                            <option value="tetradic">Tetradic (Two complementary pairs)</option>
-                        </select>
-
-                        <button className="secondary-btn" onClick={handleSave} disabled={saveSuccess}>
-                            {saveSuccess ? <Check size={18} className="text-success" /> : <Save size={18} />}
-                            <span className="hide-mobile">{saveSuccess ? 'Saved' : 'Save'}</span>
-                        </button>
-
-                        <div className="export-wrapper" ref={exportRef}>
-                            <button
-                                className={`secondary-btn ${showExport ? 'active' : ''}`}
-                                onClick={() => setShowExport(!showExport)}
-                            >
-                                <Download size={18} />
-                                <span className="hide-mobile">Export</span>
-                            </button>
-
-                            {showExport && (
-                                <div className="export-menu">
-                                    <button onClick={exportImage}>
-                                        <ImageIcon size={18} /> Export as Image
-                                    </button>
-                                    <button onClick={exportCSS}>
-                                        <Code size={18} /> Copy CSS Variables
-                                    </button>
-                                    <button onClick={exportJSON}>
-                                        <FileJson size={18} /> Copy JSON Array
-                                    </button>
-                                    <button onClick={exportTailwind}>
-                                        <Wind size={18} /> Copy Tailwind Config
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-
-                        <button className="primary-btn" onClick={generateNewColors}>
-                            <RefreshCw size={18} />
-                            <span className="hide-mobile">Generate</span>
-                        </button>
+                <div className="cp-toolbar-actions">
+                    <div className="cp-count">
+                        <label htmlFor="color-count" className="wb-note">Colours</label>
+                        <input
+                            id="color-count"
+                            className="wb-input wb-num"
+                            type="number"
+                            min="2"
+                            max="10"
+                            value={colorCount}
+                            onChange={(e) => {
+                                const val = parseInt(e.target.value);
+                                if (val >= 2 && val <= 10) {
+                                    setColorCount(val);
+                                    generateNewColors(val);
+                                }
+                            }}
+                        />
                     </div>
+
+                    <label htmlFor="harmony" className="wb-sr">Harmony</label>
+                    <select
+                        id="harmony"
+                        className="wb-select cp-harmony"
+                        value={harmonyMode}
+                        onChange={(e) => setHarmonyMode(e.target.value)}
+                    >
+                        <option value="random">Random</option>
+                        <option value="analogous">Analogous: neighbours on the wheel</option>
+                        <option value="monochromatic">Monochromatic: shades and tints</option>
+                        <option value="complementary">Complementary: opposites</option>
+                        <option value="splitComplementary">Split complementary</option>
+                        <option value="triadic">Triadic: three evenly spaced</option>
+                        <option value="tetradic">Tetradic: two opposite pairs</option>
+                    </select>
+
+                    <button className="wb-btn" onClick={handleSave} disabled={saveSuccess}>
+                        {saveSuccess ? <Check /> : <Save />}
+                        {saveSuccess ? 'Saved' : 'Save'}
+                    </button>
+
+                    <div className="cp-export" ref={exportRef}>
+                        <button
+                            className="wb-btn"
+                            aria-expanded={showExport}
+                            aria-haspopup="menu"
+                            onClick={() => setShowExport(!showExport)}
+                        >
+                            <Download /> Export
+                        </button>
+
+                        {showExport && (
+                            <div className="wb-menu" role="menu">
+                                <button role="menuitem" onClick={exportImage}>
+                                    <ImageIcon /> Download as PNG
+                                </button>
+                                <button role="menuitem" onClick={exportCSS}>
+                                    <Code /> Copy CSS variables
+                                </button>
+                                <button role="menuitem" onClick={exportJSON}>
+                                    <FileJson /> Copy JSON array
+                                </button>
+                                <button role="menuitem" onClick={exportTailwind}>
+                                    <Wind /> Copy Tailwind config
+                                </button>
+                            </div>
+                        )}
+                    </div>
+
+                    <button className="wb-btn wb-btn--primary" onClick={() => generateNewColors()}>
+                        <RefreshCw /> Generate
+                    </button>
                 </div>
             </div>
 
-            <div className="palette-swatches">
+            <div className="cp-swatches">
                 <DndContext
                     sensors={sensors}
                     collisionDetection={closestCenter}
@@ -233,6 +239,13 @@ const PaletteGenerator = () => {
                     </SortableContext>
                 </DndContext>
             </div>
+
+            {toast && (
+                <div className="wb-toast" role="status">
+                    <span className="wb-toast-dot"><Check /></span>
+                    {toast}
+                </div>
+            )}
         </div>
     );
 };

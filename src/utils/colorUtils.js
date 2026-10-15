@@ -16,10 +16,12 @@ export const getContrastText = (hex) => {
 
 export const getFormats = (hex) => {
     const color = chroma(hex);
+    // chroma returns saturation and lightness as 0–1, plus an alpha channel
+    const [h, s, l] = color.hsl();
     return {
         hex: color.hex().toUpperCase(),
-        rgb: `RGB: ${color.rgb().join(', ')}`,
-        hsl: `HSL: ${color.hsl().map((v, i) => Math.round(v || 0) + (i > 0 ? '%' : '')).join(', ')}`,
+        rgb: `RGB ${color.rgb().join(', ')}`,
+        hsl: `HSL ${Math.round(h || 0)}, ${Math.round(s * 100)}%, ${Math.round(l * 100)}%`,
     };
 };
 
